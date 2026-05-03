@@ -22,6 +22,53 @@ config.plugins = (config.plugins || []).concat(
   })
 );
 
-webpack(config, function (err) {
-  if (err) throw err;
+webpack(config, function (err, stats) {
+  if (err) {
+    console.error(err.stack || err);
+    if (err.details) {
+      console.error(err.details);
+    }
+    process.exit(1);
+    return;
+  }
+
+  if (!stats) {
+    console.error('Webpack finished with no stats.');
+    process.exit(1);
+    return;
+  }
+
+  if (stats.hasErrors()) {
+    console.error(
+      stats.toString({
+        colors: true,
+        all: false,
+        errors: true,
+        errorDetails: true,
+        errorStack: true,
+        moduleTrace: true,
+      })
+    );
+    process.exit(1);
+    return;
+  }
+
+  if (stats.hasWarnings()) {
+    console.warn(
+      stats.toString({
+        colors: true,
+        all: false,
+        warnings: true,
+      })
+    );
+  }
+
+  console.log(
+    stats.toString({
+      colors: true,
+      chunks: false,
+      modules: false,
+      assets: true,
+    })
+  );
 });

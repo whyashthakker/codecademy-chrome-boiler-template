@@ -27,7 +27,7 @@ var compiler = webpack(config);
 
 var server = new WebpackDevServer(
   {
-    https: false,
+    server: 'http',
     hot: true,
     liveReload: false,
     client: {
@@ -51,6 +51,11 @@ var server = new WebpackDevServer(
   compiler
 );
 
-(async () => {
-  await server.start();
+(async function startDevServer() {
+  try {
+    await server.start();
+  } catch (e) {
+    console.error(e);
+    process.exit(1);
+  }
 })();
